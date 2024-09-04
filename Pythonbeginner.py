@@ -54,7 +54,6 @@ pendown()
 House(40, "red")
 penup()
 home()
-
 rt(90)
 forward(200)
 lt(90)
@@ -78,4 +77,4 @@ pendown()
 House(60, "blue")
 penup()
 home()
-
+,
