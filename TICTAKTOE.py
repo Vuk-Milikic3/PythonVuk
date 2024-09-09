@@ -22,6 +22,3 @@ def modifyArray(number, player):
         gameBoard[row][col] = player
     else:
         print("This spot is already taken. Try again.")
-
-printGameBoard()
-modifyArray()
