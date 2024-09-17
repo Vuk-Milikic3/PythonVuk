@@ -41,7 +41,7 @@ def update_board(board, move, player_symbol):
         9: (2, 2)
     }
     row, col = field_coordinates[move]
-    if board[row][col] not in [player1_symbol, player2_symbol]:
+    if board[row][col] not in ['X', 'O']:
         board[row][col] = player_symbol
         return True
     else:
@@ -49,20 +49,16 @@ def update_board(board, move, player_symbol):
         return False
 
 def check_for_winner(board):
-
     for row in board:
         if row[0] == row[1] == row[2]:
             return row[0]
-    
     for col in range(3):
         if board[0][col] == board[1][col] == board[2][col]:
             return board[0][col]
-    
     if board[0][0] == board[1][1] == board[2][2]:
         return board[0][0]
     if board[0][2] == board[1][1] == board[2][0]:
         return board[0][2]
-    
     return None
 
 def ask_to_play_again():
@@ -81,42 +77,72 @@ def select_game_mode():
         if mode in ["player", "p"]:
             return "player"
         elif mode in ["computer", "c"]:
-            print("Computer opponent is not implemented yet.")
-            return None
+            return "computer"
         else:
             print("Please answer with 'computer' or 'player'.")
+
+def get_available_moves(board):
+    return [cell for row in board for cell in row if isinstance(cell, int)]
+
+def computer_move(board):
+    for move in get_available_moves(board):
+        row, col = divmod(move - 1, 3)
+        board[row][col] = player2_symbol
+        if check_for_winner(board) == player2_symbol:
+            return move
+        board[row][col] = move
+
+    for move in get_available_moves(board):
+        row, col = divmod(move - 1, 3)
+        board[row][col] = player1_symbol
+        if check_for_winner(board) == player1_symbol:
+            board[row][col] = move  
+            return move
+        board[row][col] = move
+
+    if board[1][1] == 5:
+        return 5
+
+    corners = [1, 3, 7, 9]
+    available_corners = [move for move in corners if move in get_available_moves(board)]
+    if available_corners:
+        return random.choice(available_corners)
+
+    sides = [2, 4, 6, 8]
+    available_sides = [move for move in sides if move in get_available_moves(board)]
+    if available_sides:
+        return random.choice(available_sides)
 
 def play_game():
     board = create_new_board()
     game_mode = select_game_mode()
-    if game_mode != "player":
+    if not game_mode:
         return
-
-
 
     current_player_symbol = player1_symbol
 
-    for total_moves in range(9):
+    for _ in range(9):
         game_board(board)
-        
-        # Get player move
-        move = get_player_move(current_player_symbol)
-        
-        if not update_board(board, move, current_player_symbol):
-            continue
-        
+
+        if game_mode == "player" or (game_mode == "computer" and current_player_symbol == player1_symbol):
+            move = get_player_move(current_player_symbol)
+            if not update_board(board, move, current_player_symbol):
+                continue
+        elif game_mode == "computer" and current_player_symbol == player2_symbol:
+            print("Computer's turn...")
+            move = computer_move(board)
+            update_board(board, move, current_player_symbol)
+
         winner = check_for_winner(board)
         if winner:
             game_board(board)
             print(f"{winner} wins!")
             return
-        
+
         current_player_symbol = player2_symbol if current_player_symbol == player1_symbol else player1_symbol
-        
 
     game_board(board)
     print("It's a tie!")
-
 
 while True:
     play_game()
