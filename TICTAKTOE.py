@@ -85,6 +85,7 @@ def get_available_moves(board):
     return [cell for row in board for cell in row if isinstance(cell, int)]
 
 def computer_move(board):
+    
     for move in get_available_moves(board):
         row, col = divmod(move - 1, 3)
         board[row][col] = player2_symbol
